@@ -86,18 +86,13 @@ const ProjectSchema = new mongoose.Schema({
   tasks: [TaskSchema],
   technologies: {
     type: [String],
-    required: [true, 'Please add at least one technology']
+    required: [true, 'Please add at least one tool']
   },
   githubLink: {
-    type: String,
-    match: [
-      /https?:\/\/(www\.)?github\.com\/[\w-]+(\/[\w-]+)*/,
-      'Please use a valid GitHub URL'
-    ]
+    type: String
   },
   deadline: {
-    type: Date,
-    required: [true, 'Please add a project deadline']
+    type: Date
   },
   progress: {
     type: Number,
