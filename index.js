@@ -10,8 +10,21 @@ dotenv.config();
 // Initialize Express app
 const app = express();
 
+// CORS configuration
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'https://innovaiteprojects.netlify.com',
+    'https://innovaiteprojects.netlify.app'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
