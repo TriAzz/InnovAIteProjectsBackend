@@ -47,13 +47,17 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/planner-board';
 
+// Start server regardless of MongoDB connection status
+const server = app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+// Connect to MongoDB
 mongoose.connect(MONGO_URI)
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-      console.log(`MongoDB connected successfully`);
-    });
+    console.log(`MongoDB connected successfully`);
   })
   .catch((err) => {
     console.error('Failed to connect to MongoDB', err);
+    console.log('Server running in limited mode without database access');
   });
