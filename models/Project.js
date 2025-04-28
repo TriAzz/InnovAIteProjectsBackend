@@ -91,6 +91,9 @@ const ProjectSchema = new mongoose.Schema({
   githubLink: {
     type: String
   },
+  liveSiteUrl: {
+    type: String
+  },
   deadline: {
     type: Date
   },
