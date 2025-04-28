@@ -19,13 +19,8 @@ exports.getProjects = async (req, res) => {
     // Delete excluded fields from reqQuery
     removeFields.forEach(param => delete reqQuery[param]);
     
-    // If user is not an admin, only show projects they are part of
-    if (req.user.role !== 'admin') {
-      reqQuery.$or = [
-        { creator: req.user._id },
-        { teamMembers: req.user._id }
-      ];
-    }
+    // Removed user filter to allow all users to see all projects
+    // Now any user can view all projects in the system
     
     // Create query string
     let queryStr = JSON.stringify(reqQuery);
@@ -115,17 +110,8 @@ exports.getProject = async (req, res) => {
       });
     }
     
-    // Check user permissions (admin can see all, others can only see if they're part of the project)
-    if (
-      req.user.role !== 'admin' && 
-      project.creator._id.toString() !== req.user._id.toString() && 
-      !project.teamMembers.some(member => member._id.toString() === req.user._id.toString())
-    ) {
-      return res.status(403).json({
-        success: false,
-        message: 'Not authorized to access this project'
-      });
-    }
+    // Removed permission check - any authenticated user can now view project details
+    // Edit/delete permissions are still restricted in their respective handlers
     
     res.status(200).json({
       success: true,
