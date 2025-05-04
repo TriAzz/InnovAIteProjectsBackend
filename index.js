@@ -17,14 +17,20 @@ const corsOptions = {
     'https://innovaiteprojects.netlify.com',
     'https://innovaiteprojects.netlify.app'
   ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'content-type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
+  exposedHeaders: ['Content-Length', 'X-Confirm-Delete'],
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  preflightContinue: false
 };
 
 // Middleware
 app.use(cors(corsOptions));
+
+// Handle OPTIONS preflight requests explicitly
+app.options('*', cors(corsOptions));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
