@@ -8,7 +8,42 @@ const User = require('../models/User');
 exports.register = async (req, res) => {
   try {
     console.log('Register request received:', req.body);
+
+    // Validate required fields
+    if (!req.body) {
+      console.log('Registration failed: No request body');
+      return res.status(400).json({
+        success: false,
+        message: 'No data provided'
+      });
+    }
+
     const { name, email, password, role, department, position } = req.body;
+
+    // Validate required fields
+    if (!name) {
+      console.log('Registration failed: Name is required');
+      return res.status(400).json({
+        success: false,
+        message: 'Name is required'
+      });
+    }
+
+    if (!email) {
+      console.log('Registration failed: Email is required');
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      });
+    }
+
+    if (!password) {
+      console.log('Registration failed: Password is required');
+      return res.status(400).json({
+        success: false,
+        message: 'Password is required'
+      });
+    }
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -22,13 +57,14 @@ exports.register = async (req, res) => {
     }
 
     // Create user
+    console.log('Creating new user with email:', email);
     const user = await User.create({
       name,
       email,
       password,
       role: role || 'user',
-      department,
-      position
+      department: department || '',
+      position: position || ''
     });
 
     // Generate JWT token
@@ -67,21 +103,41 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     console.log('Login request received:', req.body);
+
+    // Validate request body
+    if (!req.body) {
+      console.log('Login failed: No request body');
+      return res.status(400).json({
+        success: false,
+        message: 'No data provided'
+      });
+    }
+
     const { email, password } = req.body;
 
     // Validate email & password
-    if (!email || !password) {
-      console.log('Login failed: Missing email or password');
+    if (!email) {
+      console.log('Login failed: Missing email');
       return res.status(400).json({
         success: false,
-        message: 'Please provide email and password'
+        message: 'Please provide an email address'
+      });
+    }
+
+    if (!password) {
+      console.log('Login failed: Missing password');
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a password'
       });
     }
 
     // Check for user
+    console.log('Looking up user with email:', email);
     const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
+      console.log('Login failed: User not found with email:', email);
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
@@ -89,14 +145,18 @@ exports.login = async (req, res) => {
     }
 
     // Check if password matches
+    console.log('Checking password for user:', email);
     const isMatch = await user.matchPassword(password);
 
     if (!isMatch) {
+      console.log('Login failed: Password does not match for user:', email);
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
       });
     }
+
+    console.log('Login successful for user:', email);
 
     // Generate JWT token
     const token = user.getSignedJwtToken();
