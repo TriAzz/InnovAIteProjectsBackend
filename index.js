@@ -43,6 +43,62 @@ app.get('/', (req, res) => {
   res.send('InnovAIte Planner Board API is running');
 });
 
+// Environment variables status route (without exposing sensitive data)
+app.get('/env-status', (req, res) => {
+  res.status(200).json({
+    success: true,
+    environment: {
+      NODE_ENV: process.env.NODE_ENV || 'Not set',
+      PORT: process.env.PORT || 'Not set',
+      MONGO_URI_SET: process.env.MONGO_URI ? 'Yes' : 'No',
+      JWT_SECRET_SET: process.env.JWT_SECRET ? 'Yes' : 'No',
+      JWT_EXPIRE_SET: process.env.JWT_EXPIRE ? 'Yes' : 'No'
+    }
+  });
+});
+
+// Database status route (directly in main file for easier access)
+app.get('/db-status', async (req, res) => {
+  try {
+    const User = require('./models/User');
+
+    // Get database information
+    const dbInfo = {
+      connected: mongoose.connection.readyState === 1,
+      name: mongoose.connection.name || 'Not connected',
+      host: mongoose.connection.host || 'Not connected',
+      port: mongoose.connection.port || 'Not connected'
+    };
+
+    // Count users
+    let userCount = 0;
+    let users = [];
+
+    if (mongoose.connection.readyState === 1) {
+      try {
+        userCount = await User.countDocuments();
+        users = await User.find().select('-password').limit(10);
+      } catch (dbErr) {
+        console.error('Error querying database:', dbErr);
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      database: dbInfo,
+      userCount,
+      users
+    });
+  } catch (err) {
+    console.error('Error in db-status route:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Error checking database status',
+      error: err.message
+    });
+  }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -63,6 +119,32 @@ console.log('Attempting to connect to MongoDB at:', MONGO_URI);
 mongoose.connect(MONGO_URI)
   .then(() => {
     console.log(`MongoDB connected successfully`);
+
+    // Log database information
+    const db = mongoose.connection;
+    console.log('Connected to database:', db.name);
+
+    // List all collections
+    db.db.listCollections().toArray()
+      .then(collections => {
+        console.log('Available collections:');
+        collections.forEach(collection => {
+          console.log(`- ${collection.name}`);
+        });
+      })
+      .catch(err => {
+        console.error('Error listing collections:', err);
+      });
+
+    // Check for users collection specifically
+    const User = require('./models/User');
+    User.countDocuments()
+      .then(count => {
+        console.log(`Number of users in database: ${count}`);
+      })
+      .catch(err => {
+        console.error('Error counting users:', err);
+      });
   })
   .catch((err) => {
     console.error('Failed to connect to MongoDB', err);
