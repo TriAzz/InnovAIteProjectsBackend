@@ -7,12 +7,14 @@ const User = require('../models/User');
  */
 exports.register = async (req, res) => {
   try {
+    console.log('Register request received:', req.body);
     const { name, email, password, role, department, position } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
+      console.log('Registration failed: User already exists:', email);
       return res.status(400).json({
         success: false,
         message: 'User with this email already exists'
@@ -31,7 +33,7 @@ exports.register = async (req, res) => {
 
     // Generate JWT token
     const token = user.getSignedJwtToken();
-    
+
     // Get the user object without the password
     const userWithoutPassword = {
       _id: user._id,
@@ -64,10 +66,12 @@ exports.register = async (req, res) => {
  */
 exports.login = async (req, res) => {
   try {
+    console.log('Login request received:', req.body);
     const { email, password } = req.body;
 
     // Validate email & password
     if (!email || !password) {
+      console.log('Login failed: Missing email or password');
       return res.status(400).json({
         success: false,
         message: 'Please provide email and password'
@@ -96,7 +100,7 @@ exports.login = async (req, res) => {
 
     // Generate JWT token
     const token = user.getSignedJwtToken();
-    
+
     // Get the user object without the password
     const userWithoutPassword = {
       _id: user._id,
