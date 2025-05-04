@@ -116,7 +116,11 @@ const server = app.listen(PORT, () => {
 
 // Connect to MongoDB
 console.log('Attempting to connect to MongoDB at:', MONGO_URI);
-mongoose.connect(MONGO_URI)
+mongoose.connect(MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  dbName: 'planner-board' // Explicitly set the database name
+})
   .then(() => {
     console.log(`MongoDB connected successfully`);
 
