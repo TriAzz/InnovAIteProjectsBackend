@@ -15,7 +15,8 @@ const corsOptions = {
   origin: [
     'http://localhost:3000',
     'https://innovaiteprojects.netlify.com',
-    'https://innovaiteprojects.netlify.app'
+    'https://innovaiteprojects.netlify.app',
+    'https://innovaiteprojectsdashboard.netlify.app'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'content-type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
