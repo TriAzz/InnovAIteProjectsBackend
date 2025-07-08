@@ -23,18 +23,31 @@ Backend API service for the InnovAIte Projects Dashboard application built with 
 Set these environment variables for production:
 
 ```
-MONGODB_CONNECTION_STRING=your_mongodb_connection_string
+MONGODB_CONNECTION_STRING=mongodb+srv://username:password@cluster.mongodb.net/database_name
 ASPNETCORE_ENVIRONMENT=Production
+ASPNETCORE_URLS=http://+:8080
 ```
 
 ## Deployment
 
 This application is configured for deployment to Render.com:
 
+### **Option 1: Using Dockerfile (Recommended)**
 1. Connect your GitHub repository to Render
-2. Set the build command: `dotnet publish -c Release -o out`
-3. Set the start command: `dotnet out/innovaite-projects-dashboard.dll`
-4. Add environment variables in Render dashboard
+2. Render will auto-detect the Dockerfile
+3. Add environment variables in Render dashboard:
+   - `MONGODB_CONNECTION_STRING`: Your MongoDB connection string
+   - `ASPNETCORE_ENVIRONMENT`: `Production`
+
+### **Option 2: Using Build Commands**
+If Dockerfile isn't detected, use these settings:
+- **Build Command**: `dotnet publish -c Release -o out`
+- **Start Command**: `dotnet out/innovaite-projects-dashboard.dll`
+- **Environment Variables**: Same as above
+
+### **Required Environment Variables in Render:**
+- `MONGODB_CONNECTION_STRING`: `mongodb+srv://tomasfleming:A8tpKPpBRqNLkuIw@cluster0.5c2od.mongodb.net/innovaite_projects_dashboard?retryWrites=true&w=majority`
+- `ASPNETCORE_ENVIRONMENT`: `Production`
 
 ## Local Development
 

@@ -10,8 +10,11 @@ namespace innovaite_projects_dashboard.Persistence
 
         public DashboardContext(IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("MongoDb") ?? "mongodb://localhost:27017";
-            Console.WriteLine($"[DEBUG] Connection string being used: {connectionString}");
+            var connectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING") 
+                ?? configuration.GetConnectionString("DefaultConnection") 
+                ?? "mongodb://localhost:27017";
+            
+            Console.WriteLine($"[INFO] Using MongoDB connection (source: {(Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING") != null ? "Environment Variable" : "Configuration")})");
             var client = new MongoClient(connectionString);
             
             // Extract database name from connection string or use default
