@@ -1,0 +1,91 @@
+/* InnovAIte Projects Dashboard Swagger UI Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f7fa;
+}
+
+.swagger-ui {
+    font-family: 'Arial', sans-serif;
+}
+
+.swagger-ui .topbar {
+    background-color: #2c3e50;
+    padding: 10px 0;
+}
+
+.swagger-ui .topbar .download-url-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.swagger-ui .topbar .download-url-wrapper:before {
+    content: '';
+    background: url('/images/innovaite-logo-square.png') no-repeat center center;
+    background-size: contain;
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.swagger-ui .info .title {
+    color: #2c3e50;
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.swagger-ui .info .title:after {
+    content: " - InnovAIte";
+    color: #3498db;
+}
+
+.swagger-ui .scheme-container {
+    background-color: #ecf0f1;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    border-radius: 4px;
+}
+
+.swagger-ui .opblock.opblock-get {
+    border-color: #3498db;
+    background: rgba(52, 152, 219, 0.1);
+}
+
+.swagger-ui .opblock.opblock-post {
+    border-color: #2ecc71;
+    background: rgba(46, 204, 113, 0.1);
+}
+
+.swagger-ui .opblock.opblock-put {
+    border-color: #f39c12;
+    background: rgba(243, 156, 18, 0.1);
+}
+
+.swagger-ui .opblock.opblock-delete {
+    border-color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+}
+
+.swagger-ui .opblock.opblock-patch {
+    border-color: #9b59b6;
+    background: rgba(155, 89, 182, 0.1);
+}
+
+.swagger-ui .btn.authorize {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.swagger-ui .btn.authorize:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+.swagger-ui .btn.execute {
+    background-color: #2ecc71;
+    border-color: #2ecc71;
+}
+
+.swagger-ui .btn.execute:hover {
+    background-color: #27ae60;
+    border-color: #27ae60;
+}
