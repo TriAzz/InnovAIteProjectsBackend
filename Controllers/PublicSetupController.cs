@@ -28,14 +28,32 @@ namespace innovaite_projects_dashboard.Controllers
         /// Health check to verify this controller is accessible
         /// </summary>
         [HttpGet("health")]
-        public IActionResult GetHealth()
+        public async Task<IActionResult> GetHealth()
         {
-            return Ok(new
+            var healthInfo = new Dictionary<string, object>
             {
-                status = "online",
-                timestamp = DateTime.UtcNow,
-                message = "Public setup API is accessible"
-            });
+                ["status"] = "online",
+                ["timestamp"] = DateTime.UtcNow,
+                ["message"] = "Public setup API is accessible"
+            };
+            
+            try
+            {
+                // Test database connection without requiring authentication
+                var users = await _userRepo.GetUsersAsync();
+                healthInfo["databaseConnection"] = "connected";
+                healthInfo["usersCount"] = users.Count;
+                healthInfo["firstUserExists"] = users.Count > 0;
+            }
+            catch (Exception ex)
+            {
+                healthInfo["databaseConnection"] = "error";
+                healthInfo["errorType"] = ex.GetType().Name;
+                healthInfo["errorMessage"] = ex.Message;
+                healthInfo["hasMongoDbEnvVar"] = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING"));
+            }
+            
+            return Ok(healthInfo);
         }
 
         /// <summary>
