@@ -24,9 +24,10 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins(
-                "http://localhost:3000",
+                // Production URLs
                 "https://innovaite-projects-dashboard.netlify.app",
-                "https://innovaite-projects-dashboard-frontend.netlify.app"
+                "https://innovaite-projects-dashboard-frontend.netlify.app",
+                "https://innovaiteprojects.netlify.app"
             )
             .AllowAnyHeader()
             .AllowAnyMethod()
