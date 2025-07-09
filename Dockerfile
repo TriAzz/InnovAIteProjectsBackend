@@ -6,9 +6,9 @@ WORKDIR /app
 COPY *.csproj ./
 RUN dotnet restore
 
-# Copy everything else and build
+# Copy everything else and build the project (not the solution)
 COPY . ./
-RUN dotnet publish -c Release -o out
+RUN dotnet publish innovaite-projects-dashboard.csproj -c Release -o out
 
 # Use the official .NET 8 runtime image for running
 FROM mcr.microsoft.com/dotnet/aspnet:8.0

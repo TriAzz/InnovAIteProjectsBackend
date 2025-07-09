@@ -73,7 +73,7 @@ public class SetupController : ControllerBase
                 Description = request.Description ?? "Initial admin user"
             };
 
-            await _userRepo.AddUserAsync(newUser);
+            await _userRepo.CreateUserAsync(newUser);
 
             return Created($"/api/users/{newUser.Id}", new 
             { 

@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
+using Microsoft.Extensions.Time.Testing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,9 @@ builder.Services.AddScoped<IUserDataAccess, UserMongoDB>();
 builder.Services.AddScoped<IProjectDataAccess, ProjectMongoDB>();
 builder.Services.AddScoped<ICommentDataAccess, CommentMongoDB>();
 builder.Services.AddScoped<DashboardContext>();
+
+// Add TimeProvider for authentication
+builder.Services.AddSingleton(TimeProvider.System);
 
 builder.Services.AddAuthentication("BasicAuthentication").AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 builder.Services.AddAuthorization(options =>
