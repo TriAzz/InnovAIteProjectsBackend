@@ -50,5 +50,11 @@ namespace innovaite_projects_dashboard.Persistence
         public IMongoCollection<User> Users => _database.GetCollection<User>("users");
         public IMongoCollection<Project> Projects => _database.GetCollection<Project>("projects");
         public IMongoCollection<Comment> Comments => _database.GetCollection<Comment>("comments");
+        
+        // Method to get the database name for health checks
+        public string GetDatabaseName()
+        {
+            return _database.DatabaseNamespace.DatabaseName;
+        }
     }
 }
