@@ -20,7 +20,8 @@ EXPOSE 8080
 
 # Set environment variable for production
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV ASPNETCORE_URLS=http://+:8080
+# Use PORT environment variable provided by Render or default to 8080
+ENV PORT=8080
 
 # Start the application
 ENTRYPOINT ["dotnet", "innovaite-projects-dashboard.dll"]

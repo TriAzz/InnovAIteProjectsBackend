@@ -23,15 +23,18 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.WithOrigins(
-                // Production URLs
-                "https://innovaite-projects-dashboard.netlify.app",
-                "https://innovaite-projects-dashboard-frontend.netlify.app",
-                "https://innovaiteprojects.netlify.app"
-            )
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+            // During debugging, allow all origins to simplify troubleshooting
+            policy.SetIsOriginAllowed(origin => true)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+            
+            // Once working, you can go back to specific origins:
+            // policy.WithOrigins(
+            //     "https://innovaite-projects-dashboard.netlify.app",
+            //     "https://innovaite-projects-dashboard-frontend.netlify.app",
+            //     "https://innovaiteprojects.netlify.app"
+            // )
         });
 });
 
@@ -71,11 +74,18 @@ var app = builder.Build();
 app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(setup => setup.InjectStylesheet("/styles/dashboard.css"));
-}
+// Always enable Swagger in all environments
+app.UseSwagger();
+app.UseSwaggerUI(setup => {
+    setup.SwaggerEndpoint("/swagger/v1/swagger.json", "InnovAIte Projects Dashboard API v1");
+    setup.RoutePrefix = "swagger";
+    // Only inject stylesheet if file exists to avoid errors
+    try {
+        if (File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "styles", "dashboard.css"))) {
+            setup.InjectStylesheet("/styles/dashboard.css");
+        }
+    } catch {}
+});
 
 // Use CORS middleware
 app.UseCors();
@@ -85,6 +95,13 @@ app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
-app.MapControllers(); 
+app.MapControllers();
 
-app.Run();
+// For debugging purposes
+app.MapGet("/", () => "InnovAIte Projects Dashboard API is running! Go to /swagger for API documentation.");
+
+// Add explicit port configuration for Render
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+Console.WriteLine($"Starting server on port {port}");
+
+app.Run($"http://+:{port}");
