@@ -18,10 +18,18 @@ COPY --from=build /app/out .
 # Expose the port that the app runs on
 EXPOSE 8080
 
-# Set environment variable for production
+# Set environment variables for production
 ENV ASPNETCORE_ENVIRONMENT=Production
 # Use PORT environment variable provided by Render or default to 8080
 ENV PORT=8080
+# Explicitly log to console
+ENV Logging__Console__LogLevel__Default=Information
+ENV Logging__Console__LogLevel__Microsoft=Warning
+ENV Logging__Console__LogLevel__System=Warning
+
+# MongoDB connection string will be provided by Render environment variable
+# If not running with proper environment variables, this will show a clear error
+ENV MONGODB_CONNECTION_STRING_INFO="Using MongoDB connection from Render environment variables"
 
 # Start the application
 ENTRYPOINT ["dotnet", "innovaite-projects-dashboard.dll"]
