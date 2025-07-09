@@ -15,7 +15,6 @@ namespace innovaite_projects_dashboard
         public BasicAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
-            TimeProvider timeProvider,
             IUserDataAccess userRepo)
             : base(options, logger, encoder)
         {
