@@ -69,46 +69,115 @@ namespace innovaite_projects_dashboard.Controllers
 
             try
             {
-                // Check if any users already exist
-                var existingUsers = await _userRepo.GetUsersAsync();
+                Console.WriteLine($"[INFO] Attempting to create first admin: {request.Email}");
                 
-                if (existingUsers.Count > 0)
+                // Check if MongoDB connection works first
+                try
                 {
-                    return Conflict(new { 
-                        message = "Users already exist in the system", 
-                        usersCount = existingUsers.Count 
+                    // Check if any users already exist
+                    var existingUsers = await _userRepo.GetUsersAsync();
+                    
+                    Console.WriteLine($"[INFO] Found {existingUsers.Count} existing users");
+                    
+                    if (existingUsers.Count > 0)
+                    {
+                        return Conflict(new { 
+                            message = "Users already exist in the system", 
+                            usersCount = existingUsers.Count 
+                        });
+                    }
+
+                    // Create the admin user
+                    var newUser = new User
+                    {
+                        FirstName = request.FirstName ?? "Admin",
+                        LastName = request.LastName ?? "User",
+                        Email = request.Email,
+                        PasswordHash = Argon2PasswordHasher.HashPassword(request.Password),
+                        Role = "Admin",
+                        Description = request.Description ?? "Initial admin user",
+                        CreatedDate = DateTime.UtcNow,
+                        ModifiedDate = DateTime.UtcNow
+                    };
+
+                    await _userRepo.CreateUserAsync(newUser);
+                    
+                    Console.WriteLine($"[INFO] Admin user created successfully with ID: {newUser.Id}");
+
+                    return Created($"/api/users/{newUser.Id}", new 
+                    { 
+                        message = "Admin user created successfully",
+                        userId = newUser.Id,
+                        email = newUser.Email,
+                        role = newUser.Role
                     });
                 }
-
-                // Create the admin user
-                var newUser = new User
+                catch (MongoDB.Driver.MongoException mongoEx)
                 {
-                    FirstName = request.FirstName ?? "Admin",
-                    LastName = request.LastName ?? "User",
-                    Email = request.Email,
-                    PasswordHash = Argon2PasswordHasher.HashPassword(request.Password),
-                    Role = "Admin",
-                    Description = request.Description ?? "Initial admin user",
-                    CreatedDate = DateTime.UtcNow,
-                    ModifiedDate = DateTime.UtcNow
-                };
-
-                await _userRepo.CreateUserAsync(newUser);
-
-                return Created($"/api/users/{newUser.Id}", new 
-                { 
-                    message = "Admin user created successfully",
-                    userId = newUser.Id,
-                    email = newUser.Email,
-                    role = newUser.Role
-                });
+                    Console.WriteLine($"[ERROR] MongoDB error creating admin: {mongoEx.Message}");
+                    Console.WriteLine($"[ERROR] MongoDB stack trace: {mongoEx.StackTrace}");
+                    
+                    return StatusCode(500, new { 
+                        error = "Database connection error",
+                        errorType = mongoEx.GetType().Name,
+                        errorDetails = mongoEx.Message,
+                        innerError = mongoEx.InnerException?.Message 
+                    });
+                }
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] Unexpected error creating admin: {ex.Message}");
+                
                 return StatusCode(500, new { 
                     error = ex.Message,
-                    innerError = ex.InnerException?.Message 
+                    errorType = ex.GetType().Name,
+                    innerError = ex.InnerException?.Message,
+                    stack = ex.StackTrace
                 });
+            }
+        }
+
+        /// <summary>
+        /// Diagnostics endpoint to check database connectivity
+        /// </summary>
+        [HttpGet("diagnostics")]
+        public IActionResult GetDiagnostics()
+        {
+            var diagnostics = new Dictionary<string, object>
+            {
+                ["timestamp"] = DateTime.UtcNow,
+                ["serverInfo"] = new {
+                    osVersion = Environment.OSVersion.ToString(),
+                    machineName = Environment.MachineName,
+                    processorCount = Environment.ProcessorCount,
+                    dotnetVersion = Environment.Version.ToString(),
+                    environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                },
+                ["mongoSettings"] = new {
+                    hasEnvVar = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING")),
+                    envVarLength = Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING")?.Length ?? 0
+                }
+            };
+            
+            try
+            {
+                // Get system-level TLS info
+                diagnostics["tlsSettings"] = new {
+                    defaultSslProtocols = System.Security.Authentication.SslProtocols.Default,
+                    supportsTls12 = System.Security.Authentication.SslProtocols.Tls12.HasFlag(System.Security.Authentication.SslProtocols.Default),
+                    supportsTls13 = System.Security.Authentication.SslProtocols.Tls13.HasFlag(System.Security.Authentication.SslProtocols.Default)
+                };
+                
+                // Check if MongoDB driver is available
+                diagnostics["mongoDriverVersion"] = typeof(MongoDB.Driver.MongoClient).Assembly.GetName().Version.ToString();
+                
+                return Ok(diagnostics);
+            }
+            catch (Exception ex)
+            {
+                diagnostics["error"] = ex.Message;
+                return Ok(diagnostics);
             }
         }
     }

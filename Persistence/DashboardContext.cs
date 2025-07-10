@@ -33,6 +33,15 @@ namespace innovaite_projects_dashboard.Persistence
                 settings.ServerSelectionTimeout = TimeSpan.FromSeconds(5);
                 settings.ConnectTimeout = TimeSpan.FromSeconds(10);
                 
+                // Explicitly set SSL/TLS settings to fix SSL handshake errors
+                settings.SslSettings = new SslSettings
+                {
+                    EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12 | 
+                                         System.Security.Authentication.SslProtocols.Tls13
+                };
+                
+                Console.WriteLine($"[INFO] Configured SSL/TLS protocols: TLS 1.2 and TLS 1.3");
+                
                 var client = new MongoClient(settings);
                 
                 // Extract database name from connection string or use default
