@@ -23,19 +23,24 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            // During debugging, allow all origins to simplify troubleshooting
-            policy.SetIsOriginAllowed(origin => true)
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-            
-            // Once working, you can go back to specific origins:
-            // policy.WithOrigins(
-            //     "https://innovaite-projects-dashboard.netlify.app",
-            //     "https://innovaite-projects-dashboard-frontend.netlify.app",
-            //     "https://innovaiteprojects.netlify.app"
-            // )
+            policy.WithOrigins(
+                "https://innovaite-projects-dashboard.netlify.app",
+                "https://innovaite-projects-dashboard-frontend.netlify.app", 
+                "https://innovaiteprojects.netlify.app",
+                "http://localhost:3000"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
         });
+    
+    // Add a more permissive policy for health and diagnostics endpoints
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
 
 //USE Advanced ORM implementation (MongoDB)

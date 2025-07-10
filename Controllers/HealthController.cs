@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cors;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using innovaite_projects_dashboard.Persistence;
@@ -11,6 +12,7 @@ namespace innovaite_projects_dashboard.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/health")]
+[EnableCors("AllowAll")]
 public class HealthController : ControllerBase
 {
     private readonly IUserDataAccess _userRepo;

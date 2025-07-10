@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cors;
 using innovaite_projects_dashboard.Models;
 using innovaite_projects_dashboard.Persistence;
 using innovaite_projects_dashboard.Authentication;
@@ -12,6 +13,7 @@ namespace innovaite_projects_dashboard.Controllers
     /// </summary>
     [ApiController]
     [Route("api/public-setup")]
+    [EnableCors("AllowAll")] // Use the permissive CORS policy for this controller
     public class PublicSetupController : ControllerBase
     {
         private readonly IUserDataAccess _userRepo;
